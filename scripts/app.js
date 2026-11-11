@@ -32,6 +32,20 @@ function createAppLayout() {
     }
 
     main.append(board);
+
+    const controls = document.createElement('div');
+    controls.className = 'game-controls';
+
+    const backButton = document.createElement('button');
+    backButton.type = 'button';
+    backButton.textContent = 'back';
+
+    const startOverButton = document.createElement('button');
+    startOverButton.type = 'button';
+    startOverButton.textContent = 'start over';
+
+    controls.append(backButton, startOverButton);
+    main.append(controls);
     document.body.append(main);
 
 }
