@@ -1,0 +1,21 @@
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: min(90vw, 420px);
+    aspect-ratio: 1;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background-color: #611626;
+}
+
+.game-board__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background-color: #CA8D9A;
+    font-size: clamp(20px, 6vw, 36px);
+    font-weight: bold;
+}
