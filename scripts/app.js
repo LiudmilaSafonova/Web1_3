@@ -31,7 +31,12 @@ function createAppLayout() {
         board.append(cell);
     }
 
-    main.append(board);
+    const gameArea = document.createElement('div');
+    gameArea.className = 'game-area';
+
+    const boardColumn = document.createElement('div');
+    boardColumn.className = 'game-area__board-column';
+    boardColumn.append(board);
 
     const controls = document.createElement('div');
     controls.className = 'game-controls';
@@ -45,7 +50,27 @@ function createAppLayout() {
     startOverButton.textContent = 'start over';
 
     controls.append(backButton, startOverButton);
-    main.append(controls);
+    boardColumn.append(controls);
+
+    const leaderboardEntry = document.createElement('section');
+    leaderboardEntry.className = 'leaderboard-entry';
+
+    const leaderboardText = document.createElement('p');
+    leaderboardText.append('add score ');
+
+    const leaderboardScore = document.createElement('output');
+    leaderboardScore.id = 'leaderboard-score';
+    leaderboardScore.textContent = scoreValue.textContent;
+    leaderboardText.append(leaderboardScore, ' to leaderboard');
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'enter name';
+    nameInput.setAttribute('aria-label', 'enter name');
+
+    leaderboardEntry.append(leaderboardText, nameInput);
+    gameArea.append(boardColumn, leaderboardEntry);
+    main.append(gameArea);
     document.body.append(main);
 
 }
