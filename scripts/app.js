@@ -53,8 +53,17 @@ function createInitialBoardValues() {
     return values;
 }
 
+function renderBoard(values) {
+    const cells = document.querySelectorAll('.game-board__cell');
+
+    cells.forEach((cell, index) => {
+        cell.textContent = values[index] === 0 ? '' : String(values[index]);
+    });
+}
+
 createAppLayout();
 const boardValues = createInitialBoardValues();
+renderBoard(boardValues);
 
 
 
