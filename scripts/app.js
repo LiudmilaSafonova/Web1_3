@@ -157,6 +157,11 @@ function renderBoard(values) {
     });
 }
 
+function renderScore(score) {
+    document.getElementById('score').textContent = String(score);
+    document.getElementById('leaderboard-score').textContent = String(score);
+}
+
 function renderLeaderboard(entries) {
     const list = document.querySelector('.leaderboard-list');
     list.replaceChildren();
@@ -206,9 +211,37 @@ function addScoreToLeaderboard(name, score) {
 
 let leaderboardEntries = loadLeaderboard();
 createAppLayout();
-const boardValues = createInitialBoardValues();
+let boardValues = createInitialBoardValues();
+let currentScore = 0;
 renderBoard(boardValues);
+renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
+
+document.addEventListener('keydown', (event) => {
+    const directions = {
+        ArrowLeft: 'left',
+        ArrowRight: 'right',
+        ArrowUp: 'up',
+        ArrowDown: 'down',
+    };
+    const direction = directions[event.key];
+
+    if (!direction || event.target.tagName === 'INPUT' || document.querySelector('.leaderboard-dialog').open) {
+        return;
+    }
+
+    event.preventDefault();
+    const result = moveBoard(boardValues, direction);
+
+    if (!result.changed) {
+        return;
+    }
+
+    boardValues = result.values;
+    currentScore += result.score;
+    renderBoard(boardValues);
+    renderScore(currentScore);
+});
 
 
 
