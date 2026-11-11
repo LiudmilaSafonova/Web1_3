@@ -124,13 +124,9 @@ function createAppLayout() {
         leaderboardDialog.showModal();
     });
 
-    const sidebar = document.createElement('div');
-    sidebar.className = 'game-area__sidebar';
-    sidebar.append(leaderboardEntry);
+    boardColumn.append(leaderboardEntry, leaderboardButton);
 
-    boardColumn.append(leaderboardButton);
-
-    gameArea.append(boardColumn, sidebar);
+    gameArea.append(boardColumn);
     main.append(gameArea);
     document.body.append(main, leaderboardDialog);
 

@@ -1,9 +1,5 @@
 .game-area {
-    display: grid;
-    grid-template-columns: minmax(0, 420px) minmax(220px, 280px);
-    align-items: start;
-    gap: 20px;
-    width: min(100%, 720px);
+    width: min(90vw, 420px);
 }
 
 .game-header {
@@ -81,13 +77,9 @@
     cursor: pointer;
 }
 
-.game-area__sidebar {
-    display: grid;
-    gap: 12px;
-}
-
 .leaderboard-entry {
     box-sizing: border-box;
+    margin-top: 12px;
     padding: 20px;
     border-radius: 8px;
     background-color: #CA8D9A;
@@ -182,11 +174,4 @@
 
 .leaderboard-list__row span:first-child {
     overflow-wrap: anywhere;
-}
-
-@media (max-width: 680px) {
-    .game-area {
-        grid-template-columns: minmax(0, 420px);
-        width: min(90vw, 420px);
-    }
 }
