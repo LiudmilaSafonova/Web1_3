@@ -59,3 +59,25 @@ function moveBoard(values, direction) {
     const changed = values.some((value, index) => value !== nextValues[index]);
     return { values: nextValues, score, changed };
 }
+
+function addRandomTiles(values, minCount = 1, maxCount = 2) {
+    const nextValues = values.slice();
+    const emptyPositions = [];
+
+    nextValues.forEach((value, index) => {
+        if (value === 0) {
+            emptyPositions.push(index);
+        }
+    });
+
+    const randomCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+    const count = Math.min(randomCount, emptyPositions.length);
+
+    for (let i = 0; i < count; i++) {
+        const randomIndex = Math.floor(Math.random() * emptyPositions.length);
+        const position = emptyPositions.splice(randomIndex, 1)[0];
+        nextValues[position] = Math.random() < 0.5 ? 2 : 4;
+    }
+
+    return nextValues;
+}
