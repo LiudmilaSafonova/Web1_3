@@ -68,8 +68,23 @@ function createAppLayout() {
     nameInput.placeholder = 'enter name';
     nameInput.setAttribute('aria-label', 'enter name');
 
+    const leaderboardTitle = document.createElement('h2');
+    leaderboardTitle.textContent = 'Leaderboard';
+
+    const leaderboardList = document.createElement('ol');
+    leaderboardList.className = 'leaderboard-list';
+
     leaderboardEntry.append(leaderboardText, nameInput);
-    gameArea.append(boardColumn, leaderboardEntry);
+
+    const leaderboard = document.createElement('section');
+    leaderboard.className = 'leaderboard';
+    leaderboard.append(leaderboardTitle, leaderboardList);
+
+    const sidebar = document.createElement('div');
+    sidebar.className = 'game-area__sidebar';
+    sidebar.append(leaderboardEntry, leaderboard);
+
+    gameArea.append(boardColumn, sidebar);
     main.append(gameArea);
     document.body.append(main);
 
@@ -100,9 +115,35 @@ function renderBoard(values) {
     });
 }
 
+function renderLeaderboard(entries) {
+    const list = document.querySelector('.leaderboard-list');
+    list.replaceChildren();
+
+    entries.forEach((entry) => {
+        const row = document.createElement('li');
+        row.className = 'leaderboard-list__row';
+
+        const name = document.createElement('span');
+        name.textContent = entry.name;
+
+        const score = document.createElement('span');
+        score.textContent = String(entry.score);
+
+        row.append(name, score);
+        list.append(row);
+    });
+}
+
 createAppLayout();
 const boardValues = createInitialBoardValues();
 renderBoard(boardValues);
+
+const leaderboardEntries = [
+    { name: 'player1', score: 2048 },
+    { name: 'player2', score: 1024 },
+    { name: 'player3', score: 512 },
+];
+renderLeaderboard(leaderboardEntries);
 
 
 
