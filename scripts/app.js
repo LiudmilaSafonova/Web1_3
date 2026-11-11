@@ -71,22 +71,46 @@ function createAppLayout() {
     const leaderboardTitle = document.createElement('h2');
     leaderboardTitle.textContent = 'Leaderboard';
 
+    const leaderboardButton = document.createElement('button');
+    leaderboardButton.className = 'leaderboard-open';
+    leaderboardButton.type = 'button';
+    leaderboardButton.textContent = 'Leaderboard';
+
+    const leaderboardDialog = document.createElement('dialog');
+    leaderboardDialog.className = 'leaderboard-dialog';
+    leaderboardDialog.setAttribute('aria-labelledby', 'leaderboard-title');
+
+    leaderboardTitle.id = 'leaderboard-title';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'leaderboard-close';
+    closeButton.type = 'button';
+    closeButton.textContent = 'Close';
+
+    const leaderboardHeader = document.createElement('div');
+    leaderboardHeader.className = 'leaderboard-dialog__header';
+    leaderboardHeader.append(leaderboardTitle, closeButton);
+
+    const leaderboardColumns = document.createElement('div');
+    leaderboardColumns.className = 'leaderboard-columns';
+    leaderboardColumns.append('Name', 'Score', 'Date');
+
     const leaderboardList = document.createElement('ol');
     leaderboardList.className = 'leaderboard-list';
 
     leaderboardEntry.append(leaderboardText, nameInput);
 
-    const leaderboard = document.createElement('section');
-    leaderboard.className = 'leaderboard';
-    leaderboard.append(leaderboardTitle, leaderboardList);
+    leaderboardDialog.append(leaderboardHeader, leaderboardColumns, leaderboardList);
+    leaderboardButton.addEventListener('click', () => leaderboardDialog.showModal());
+    closeButton.addEventListener('click', () => leaderboardDialog.close());
 
     const sidebar = document.createElement('div');
     sidebar.className = 'game-area__sidebar';
-    sidebar.append(leaderboardEntry, leaderboard);
+    sidebar.append(leaderboardEntry, leaderboardButton);
 
     gameArea.append(boardColumn, sidebar);
     main.append(gameArea);
-    document.body.append(main);
+    document.body.append(main, leaderboardDialog);
 
 }
 
@@ -129,7 +153,11 @@ function renderLeaderboard(entries) {
         const score = document.createElement('span');
         score.textContent = String(entry.score);
 
-        row.append(name, score);
+        const date = document.createElement('time');
+        date.dateTime = entry.date;
+        date.textContent = entry.date.split('-').reverse().join('.');
+
+        row.append(name, score, date);
         list.append(row);
     });
 }
@@ -139,9 +167,9 @@ const boardValues = createInitialBoardValues();
 renderBoard(boardValues);
 
 const leaderboardEntries = [
-    { name: 'player1', score: 2048 },
-    { name: 'player2', score: 1024 },
-    { name: 'player3', score: 512 },
+    { name: 'player1', score: 2048, date: '2026-11-11' },
+    { name: 'player2', score: 1024, date: '2026-11-10' },
+    { name: 'player3', score: 512, date: '2026-11-09' },
 ];
 renderLeaderboard(leaderboardEntries);
 

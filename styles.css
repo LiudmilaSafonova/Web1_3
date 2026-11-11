@@ -86,8 +86,7 @@
     gap: 12px;
 }
 
-.leaderboard-entry,
-.leaderboard {
+.leaderboard-entry {
     box-sizing: border-box;
     padding: 20px;
     border-radius: 8px;
@@ -108,9 +107,55 @@
     font: inherit;
 }
 
-.leaderboard h2 {
-    margin: 0 0 12px;
+.leaderboard-open,
+.leaderboard-close {
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 5px;
+    background-color: #611626;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+.leaderboard-dialog {
+    box-sizing: border-box;
+    width: min(500px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 20px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #CA8D9A;
+    color: #611626;
+}
+
+.leaderboard-dialog::backdrop {
+    background-color: rgb(0 0 0 / 55%);
+}
+
+.leaderboard-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.leaderboard-dialog h2 {
+    margin: 0;
     font-size: 1.25rem;
+}
+
+.leaderboard-columns,
+.leaderboard-list__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 60px 100px;
+    gap: 8px;
+}
+
+.leaderboard-columns {
+    font-weight: bold;
 }
 
 .leaderboard-list {
@@ -120,9 +165,6 @@
 }
 
 .leaderboard-list__row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
     padding: 8px 0;
     border-bottom: 1px solid #611626;
 }
