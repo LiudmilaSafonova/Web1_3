@@ -21,11 +21,22 @@ function createAppLayout() {
 
     header.append(title, score);
     main.append(header);
+
+    const board = document.createElement('div');
+    board.className = 'game-board';
+
+    for (let i = 0; i < 16; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'game-board__cell';
+        board.append(cell);
+    }
+
+    main.append(board);
     document.body.append(main);
 
 }
 
-elements = createAppLayout()
+createAppLayout()
 
 
 
