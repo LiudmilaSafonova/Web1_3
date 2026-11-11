@@ -6,6 +6,37 @@
     width: min(100%, 720px);
 }
 
+.game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.game-header h1 {
+    margin: 0;
+    color: #611626;
+    font-size: clamp(2.5rem, 10vw, 4rem);
+}
+
+.game-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background-color: #611626;
+    color: white;
+}
+
+.game-score output {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 .game-board {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

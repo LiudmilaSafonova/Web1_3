@@ -3,12 +3,13 @@ function createAppLayout() {
     main.className = 'todo-app';
 
     const header = document.createElement('header');
-    header.className = 'todo-app__header';
+    header.className = 'game-header';
 
     const title = document.createElement('h1');
     title.textContent = '2048';
 
     const score = document.createElement('div');
+    score.className = 'game-score';
 
     const scoreLabel = document.createElement('span');
     scoreLabel.textContent = 'score';
@@ -20,7 +21,6 @@ function createAppLayout() {
     score.append(scoreLabel, scoreValue);
 
     header.append(title, score);
-    main.append(header);
 
     const board = document.createElement('div');
     board.className = 'game-board';
@@ -36,7 +36,7 @@ function createAppLayout() {
 
     const boardColumn = document.createElement('div');
     boardColumn.className = 'game-area__board-column';
-    boardColumn.append(board);
+    boardColumn.append(header, board);
 
     const controls = document.createElement('div');
     controls.className = 'game-controls';
