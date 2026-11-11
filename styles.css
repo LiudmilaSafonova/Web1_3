@@ -108,7 +108,8 @@
 }
 
 .leaderboard-open,
-.leaderboard-close {
+.leaderboard-close,
+.leaderboard-save {
     min-height: 44px;
     padding: 8px 16px;
     border: 0;
@@ -117,6 +118,16 @@
     color: white;
     font: inherit;
     cursor: pointer;
+}
+
+.leaderboard-open {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.leaderboard-save {
+    width: 100%;
+    margin-top: 12px;
 }
 
 .leaderboard-dialog {

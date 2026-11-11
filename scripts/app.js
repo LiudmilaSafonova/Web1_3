@@ -67,6 +67,13 @@ function createAppLayout() {
     nameInput.type = 'text';
     nameInput.placeholder = 'enter name';
     nameInput.setAttribute('aria-label', 'enter name');
+    nameInput.required = true;
+    nameInput.maxLength = 30;
+
+    const saveScoreButton = document.createElement('button');
+    saveScoreButton.className = 'leaderboard-save';
+    saveScoreButton.type = 'button';
+    saveScoreButton.textContent = 'Add score';
 
     const leaderboardTitle = document.createElement('h2');
     leaderboardTitle.textContent = 'Leaderboard';
@@ -98,15 +105,30 @@ function createAppLayout() {
     const leaderboardList = document.createElement('ol');
     leaderboardList.className = 'leaderboard-list';
 
-    leaderboardEntry.append(leaderboardText, nameInput);
+    leaderboardEntry.append(leaderboardText, nameInput, saveScoreButton);
 
     leaderboardDialog.append(leaderboardHeader, leaderboardColumns, leaderboardList);
     leaderboardButton.addEventListener('click', () => leaderboardDialog.showModal());
     closeButton.addEventListener('click', () => leaderboardDialog.close());
+    saveScoreButton.addEventListener('click', () => {
+        const name = nameInput.value.trim();
+
+        if (!name) {
+            nameInput.value = '';
+            nameInput.reportValidity();
+            return;
+        }
+
+        addScoreToLeaderboard(name, Number(scoreValue.textContent));
+        nameInput.value = '';
+        leaderboardDialog.showModal();
+    });
 
     const sidebar = document.createElement('div');
     sidebar.className = 'game-area__sidebar';
-    sidebar.append(leaderboardEntry, leaderboardButton);
+    sidebar.append(leaderboardEntry);
+
+    boardColumn.append(leaderboardButton);
 
     gameArea.append(boardColumn, sidebar);
     main.append(gameArea);
@@ -162,15 +184,34 @@ function renderLeaderboard(entries) {
     });
 }
 
+function loadLeaderboard() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('2048-leaderboard') || '[]');
+        return Array.isArray(saved) ? saved : [];
+    } catch {
+        return [];
+    }
+}
+
+function addScoreToLeaderboard(name, score) {
+    const now = new Date();
+    const date = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, '0'),
+        String(now.getDate()).padStart(2, '0'),
+    ].join('-');
+
+    leaderboardEntries.push({ name, score, date });
+    leaderboardEntries.sort((a, b) => b.score - a.score);
+    leaderboardEntries = leaderboardEntries.slice(0, 10);
+    localStorage.setItem('2048-leaderboard', JSON.stringify(leaderboardEntries));
+    renderLeaderboard(leaderboardEntries);
+}
+
+let leaderboardEntries = loadLeaderboard();
 createAppLayout();
 const boardValues = createInitialBoardValues();
 renderBoard(boardValues);
-
-const leaderboardEntries = [
-    { name: 'player1', score: 2048, date: '2026-11-11' },
-    { name: 'player2', score: 1024, date: '2026-11-10' },
-    { name: 'player3', score: 512, date: '2026-11-09' },
-];
 renderLeaderboard(leaderboardEntries);
 
 
