@@ -227,8 +227,12 @@ document.addEventListener('keydown', (event) => {
         d: 'right',
         w: 'up',
         s: 'down',
+        KeyA: 'left',
+        KeyD: 'right',
+        KeyW: 'up',
+        KeyS: 'down',
     };
-    const direction = directions[event.key] ?? directions[event.key.toLowerCase()];
+    const direction = directions[event.code] ?? directions[event.key.toLowerCase()];
 
     if (!direction || event.target.tagName === 'INPUT' || document.querySelector('.leaderboard-dialog').open) {
         return;
