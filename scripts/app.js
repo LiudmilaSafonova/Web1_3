@@ -36,7 +36,25 @@ function createAppLayout() {
 
 }
 
-createAppLayout()
+function createInitialBoardValues() {
+    const values = Array(16).fill(0);
+    const tileCount = Math.floor(Math.random() * 3) + 1;
+
+    for (let i = 0; i < tileCount; i++) {
+        let cellIndex;
+
+        do {
+            cellIndex = Math.floor(Math.random() * values.length);
+        } while (values[cellIndex] !== 0);
+
+        values[cellIndex] = Math.random() < 0.5 ? 2 : 4;
+    }
+
+    return values;
+}
+
+createAppLayout();
+const boardValues = createInitialBoardValues();
 
 
 
