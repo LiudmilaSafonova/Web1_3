@@ -1,5 +1,6 @@
 .game-area {
     width: min(90vw, 420px);
+    margin-inline: auto;
 }
 
 .game-header {
