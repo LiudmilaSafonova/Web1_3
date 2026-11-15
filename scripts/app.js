@@ -284,24 +284,11 @@ renderBoard(boardValues);
 renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
 
-document.addEventListener('keydown', (event) => {
-    const directions = {
-        ArrowLeft: 'left',
-        ArrowRight: 'right',
-        ArrowUp: 'up',
-        ArrowDown: 'down',
-        KeyA: 'left',
-        KeyD: 'right',
-        KeyW: 'up',
-        KeyS: 'down',
-    };
-    const direction = directions[event.code] ?? directions[event.key.toLowerCase()];
-
-    if (!direction || gameIsOver || event.target.tagName === 'INPUT' || document.querySelector('dialog[open]')) {
+function handleMove(direction) {
+    if (gameIsOver || document.querySelector('dialog[open]')) {
         return;
     }
 
-    event.preventDefault();
     const result = moveBoard(boardValues, direction);
 
     if (!result.changed) {
@@ -321,6 +308,66 @@ document.addEventListener('keydown', (event) => {
         document.getElementById('final-score').textContent = String(currentScore);
         document.querySelector('.game-over-dialog').showModal();
     }
+}
+
+document.addEventListener('keydown', (event) => {
+    const directions = {
+        ArrowLeft: 'left',
+        ArrowRight: 'right',
+        ArrowUp: 'up',
+        ArrowDown: 'down',
+        KeyA: 'left',
+        KeyD: 'right',
+        KeyW: 'up',
+        KeyS: 'down',
+    };
+    const direction = directions[event.code] ?? directions[event.key.toLowerCase()];
+
+    if (!direction || gameIsOver || event.target.tagName === 'INPUT' || document.querySelector('dialog[open]')) {
+        return;
+    }
+
+    event.preventDefault();
+    handleMove(direction);
+});
+
+const board = document.querySelector('.game-board');
+let touchStart = null;
+
+board.addEventListener('touchstart', (event) => {
+    if (event.touches.length !== 1) {
+        touchStart = null;
+        return;
+    }
+
+    touchStart = {
+        x: event.touches[0].clientX,
+        y: event.touches[0].clientY,
+    };
+}, { passive: true });
+
+board.addEventListener('touchend', (event) => {
+    if (touchStart === null || event.changedTouches.length !== 1) {
+        return;
+    }
+
+    const deltaX = event.changedTouches[0].clientX - touchStart.x;
+    const deltaY = event.changedTouches[0].clientY - touchStart.y;
+    touchStart = null;
+
+    if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 30) {
+        return;
+    }
+
+    const direction = Math.abs(deltaX) > Math.abs(deltaY)
+        ? (deltaX > 0 ? 'right' : 'left')
+        : (deltaY > 0 ? 'down' : 'up');
+
+    handleMove(direction);
+});
+
+board.addEventListener('touchcancel', () => {
+    touchStart = null;
 });
 
 
