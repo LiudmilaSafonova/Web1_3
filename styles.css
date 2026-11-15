@@ -190,7 +190,12 @@
 
 .game-over-dialog__actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
+}
+
+.game-over-dialog__actions button:first-child {
+    flex-basis: 100%;
 }
 
 .game-over-dialog__actions button {

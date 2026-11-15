@@ -148,6 +148,14 @@ function createAppLayout() {
     finalScore.id = 'final-score';
     finalScoreText.append(finalScore);
 
+    const addResultButton = document.createElement('button');
+    addResultButton.type = 'button';
+    addResultButton.textContent = 'Add result to leaderboard';
+    addResultButton.addEventListener('click', () => {
+        gameOverDialog.close();
+        nameInput.focus();
+    });
+
     const gameOverClose = document.createElement('button');
     gameOverClose.type = 'button';
     gameOverClose.textContent = 'Close';
@@ -160,7 +168,7 @@ function createAppLayout() {
 
     const gameOverActions = document.createElement('div');
     gameOverActions.className = 'game-over-dialog__actions';
-    gameOverActions.append(gameOverClose, gameOverRestart);
+    gameOverActions.append(addResultButton, gameOverClose, gameOverRestart);
 
     gameOverDialog.append(gameOverTitle, finalScoreText, gameOverActions);
     document.body.append(main, leaderboardDialog, gameOverDialog);
