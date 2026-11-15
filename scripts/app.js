@@ -48,6 +48,7 @@ function createAppLayout() {
     const startOverButton = document.createElement('button');
     startOverButton.type = 'button';
     startOverButton.textContent = 'start over';
+    startOverButton.addEventListener('click', startNewGame);
 
     controls.append(backButton, startOverButton);
     boardColumn.append(controls);
@@ -128,7 +129,38 @@ function createAppLayout() {
 
     gameArea.append(boardColumn);
     main.append(gameArea);
-    document.body.append(main, leaderboardDialog);
+
+    const gameOverDialog = document.createElement('dialog');
+    gameOverDialog.className = 'game-over-dialog';
+    gameOverDialog.setAttribute('aria-labelledby', 'game-over-title');
+
+    const gameOverTitle = document.createElement('h2');
+    gameOverTitle.id = 'game-over-title';
+    gameOverTitle.textContent = 'Game over';
+
+    const finalScoreText = document.createElement('p');
+    finalScoreText.append('Final score: ');
+
+    const finalScore = document.createElement('output');
+    finalScore.id = 'final-score';
+    finalScoreText.append(finalScore);
+
+    const gameOverClose = document.createElement('button');
+    gameOverClose.type = 'button';
+    gameOverClose.textContent = 'Close';
+    gameOverClose.addEventListener('click', () => gameOverDialog.close());
+
+    const gameOverRestart = document.createElement('button');
+    gameOverRestart.type = 'button';
+    gameOverRestart.textContent = 'Start over';
+    gameOverRestart.addEventListener('click', startNewGame);
+
+    const gameOverActions = document.createElement('div');
+    gameOverActions.className = 'game-over-dialog__actions';
+    gameOverActions.append(gameOverClose, gameOverRestart);
+
+    gameOverDialog.append(gameOverTitle, finalScoreText, gameOverActions);
+    document.body.append(main, leaderboardDialog, gameOverDialog);
 
 }
 
@@ -147,6 +179,19 @@ function renderBoard(values) {
 function renderScore(score) {
     document.getElementById('score').textContent = String(score);
     document.getElementById('leaderboard-score').textContent = String(score);
+}
+
+function startNewGame() {
+    boardValues = createInitialBoardValues();
+    currentScore = 0;
+    gameIsOver = false;
+    renderBoard(boardValues);
+    renderScore(currentScore);
+
+    const gameOverDialog = document.querySelector('.game-over-dialog');
+    if (gameOverDialog.open) {
+        gameOverDialog.close();
+    }
 }
 
 function renderLeaderboard(entries) {
@@ -200,6 +245,7 @@ let leaderboardEntries = loadLeaderboard();
 createAppLayout();
 let boardValues = createInitialBoardValues();
 let currentScore = 0;
+let gameIsOver = false;
 renderBoard(boardValues);
 renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
@@ -217,7 +263,7 @@ document.addEventListener('keydown', (event) => {
     };
     const direction = directions[event.code] ?? directions[event.key.toLowerCase()];
 
-    if (!direction || event.target.tagName === 'INPUT' || document.querySelector('.leaderboard-dialog').open) {
+    if (!direction || gameIsOver || event.target.tagName === 'INPUT' || document.querySelector('dialog[open]')) {
         return;
     }
 
@@ -232,6 +278,12 @@ document.addEventListener('keydown', (event) => {
     currentScore += result.score;
     renderBoard(boardValues);
     renderScore(currentScore);
+
+    if (isGameOver(boardValues)) {
+        gameIsOver = true;
+        document.getElementById('final-score').textContent = String(currentScore);
+        document.querySelector('.game-over-dialog').showModal();
+    }
 });
 
 

@@ -123,7 +123,8 @@
     margin-top: 12px;
 }
 
-.leaderboard-dialog {
+.leaderboard-dialog,
+.game-over-dialog {
     box-sizing: border-box;
     width: min(500px, calc(100vw - 32px));
     max-height: calc(100vh - 32px);
@@ -134,7 +135,8 @@
     color: #611626;
 }
 
-.leaderboard-dialog::backdrop {
+.leaderboard-dialog::backdrop,
+.game-over-dialog::backdrop {
     background-color: rgb(0 0 0 / 55%);
 }
 
@@ -175,4 +177,24 @@
 
 .leaderboard-list__row span:first-child {
     overflow-wrap: anywhere;
+}
+
+.game-over-dialog h2 {
+    margin: 0;
+}
+
+.game-over-dialog__actions {
+    display: flex;
+    gap: 12px;
+}
+
+.game-over-dialog__actions button {
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 5px;
+    background-color: #611626;
+    color: white;
+    font: inherit;
+    cursor: pointer;
 }

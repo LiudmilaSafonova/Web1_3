@@ -81,3 +81,26 @@ function addRandomTiles(values, minCount = 1, maxCount = 2) {
 
     return nextValues;
 }
+
+function isGameOver(values) {
+    const size = 4;
+
+    for (let index = 0; index < values.length; index++) {
+        if (values[index] === 0) {
+            return false;
+        }
+
+        const row = Math.floor(index / size);
+        const column = index % size;
+
+        if (column < size - 1 && values[index] === values[index + 1]) {
+            return false;
+        }
+
+        if (row < size - 1 && values[index] === values[index + size]) {
+            return false;
+        }
+    }
+
+    return true;
+}
