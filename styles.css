@@ -78,6 +78,11 @@
     cursor: pointer;
 }
 
+.game-controls button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
 .leaderboard-entry {
     box-sizing: border-box;
     margin-top: 12px;

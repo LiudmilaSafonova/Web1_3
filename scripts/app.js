@@ -43,7 +43,10 @@ function createAppLayout() {
 
     const backButton = document.createElement('button');
     backButton.type = 'button';
+    backButton.id = 'back-button';
     backButton.textContent = 'back';
+    backButton.disabled = true;
+    backButton.addEventListener('click', undoLastMove);
 
     const startOverButton = document.createElement('button');
     startOverButton.type = 'button';
@@ -185,6 +188,8 @@ function startNewGame() {
     boardValues = createInitialBoardValues();
     currentScore = 0;
     gameIsOver = false;
+    previousState = null;
+    document.getElementById('back-button').disabled = true;
     renderBoard(boardValues);
     renderScore(currentScore);
 
@@ -192,6 +197,19 @@ function startNewGame() {
     if (gameOverDialog.open) {
         gameOverDialog.close();
     }
+}
+
+function undoLastMove() {
+    if (gameIsOver || previousState === null) {
+        return;
+    }
+
+    boardValues = previousState.values;
+    currentScore = previousState.score;
+    previousState = null;
+    document.getElementById('back-button').disabled = true;
+    renderBoard(boardValues);
+    renderScore(currentScore);
 }
 
 function renderLeaderboard(entries) {
@@ -246,6 +264,7 @@ createAppLayout();
 let boardValues = createInitialBoardValues();
 let currentScore = 0;
 let gameIsOver = false;
+let previousState = null;
 renderBoard(boardValues);
 renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
@@ -274,6 +293,8 @@ document.addEventListener('keydown', (event) => {
         return;
     }
 
+    previousState = { values: boardValues.slice(), score: currentScore };
+    document.getElementById('back-button').disabled = false;
     boardValues = addRandomTiles(result.values);
     currentScore += result.score;
     renderBoard(boardValues);
@@ -281,6 +302,7 @@ document.addEventListener('keydown', (event) => {
 
     if (isGameOver(boardValues)) {
         gameIsOver = true;
+        document.getElementById('back-button').disabled = true;
         document.getElementById('final-score').textContent = String(currentScore);
         document.querySelector('.game-over-dialog').showModal();
     }
