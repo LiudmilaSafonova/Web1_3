@@ -204,6 +204,7 @@ function startNewGame() {
     currentScore = 0;
     gameIsOver = false;
     previousState = null;
+    saveGameState();
     document.getElementById('back-button').disabled = true;
     renderBoard(boardValues);
     renderScore(currentScore);
@@ -222,6 +223,7 @@ function undoLastMove() {
     boardValues = previousState.values;
     currentScore = previousState.score;
     previousState = null;
+    saveGameState();
     document.getElementById('back-button').disabled = true;
     renderBoard(boardValues);
     renderScore(currentScore);
@@ -274,15 +276,37 @@ function addScoreToLeaderboard(name, score) {
     renderLeaderboard(leaderboardEntries);
 }
 
+function loadGameState() {
+    const saved = localStorage.getItem('2048-game');
+    return saved ? JSON.parse(saved) : null;
+}
+
+function saveGameState() {
+    localStorage.setItem('2048-game', JSON.stringify({
+        values: boardValues,
+        score: currentScore,
+        gameIsOver,
+        previousState,
+    }));
+}
+
 let leaderboardEntries = loadLeaderboard();
 createAppLayout();
-let boardValues = createInitialBoardValues();
-let currentScore = 0;
-let gameIsOver = false;
-let previousState = null;
+const savedGame = loadGameState();
+let boardValues = savedGame?.values ?? createInitialBoardValues();
+let currentScore = savedGame?.score ?? 0;
+let gameIsOver = savedGame?.gameIsOver ?? false;
+let previousState = savedGame?.previousState ?? null;
 renderBoard(boardValues);
 renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
+document.getElementById('back-button').disabled = gameIsOver || previousState === null;
+saveGameState();
+
+if (gameIsOver) {
+    document.getElementById('final-score').textContent = String(currentScore);
+    document.querySelector('.game-over-dialog').showModal();
+}
 
 function handleMove(direction) {
     if (gameIsOver || document.querySelector('dialog[open]')) {
@@ -308,6 +332,8 @@ function handleMove(direction) {
         document.getElementById('final-score').textContent = String(currentScore);
         document.querySelector('.game-over-dialog').showModal();
     }
+
+    saveGameState();
 }
 
 document.addEventListener('keydown', (event) => {
