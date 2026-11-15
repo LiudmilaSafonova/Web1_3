@@ -60,6 +60,63 @@
     font-weight: bold;
 }
 
+.game-board__cell[data-value] {
+    background-color: #2e0812;
+    color: #fff;
+}
+
+.game-board__cell[data-value="2"] {
+    background-color: #f9e4e9;
+    color: #4b1724;
+}
+
+.game-board__cell[data-value="4"] {
+    background-color: #f2cbd5;
+    color: #4b1724;
+}
+
+.game-board__cell[data-value="8"] {
+    background-color: #eaa8b9;
+    color: #4b1724;
+}
+
+.game-board__cell[data-value="16"] {
+    background-color: #df829b;
+    color: #4b1724;
+}
+
+.game-board__cell[data-value="32"] {
+    background-color: #d35e7d;
+}
+
+.game-board__cell[data-value="64"] {
+    background-color: #c53e64;
+}
+
+.game-board__cell[data-value="128"] {
+    background-color: #a92b51;
+}
+
+.game-board__cell[data-value="256"] {
+    background-color: #8f2043;
+}
+
+.game-board__cell[data-value="512"] {
+    background-color: #761a38;
+}
+
+.game-board__cell[data-value="1024"] {
+    background-color: #611626;
+}
+
+.game-board__cell[data-value="2048"] {
+    background-color: #4d1020;
+}
+
+.game-board__cell[data-value="4096"] {
+    background-color: #3b0c19;
+}
+
 .game-controls {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

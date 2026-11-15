@@ -183,7 +183,14 @@ function renderBoard(values) {
     const cells = document.querySelectorAll('.game-board__cell');
 
     cells.forEach((cell, index) => {
-        cell.textContent = values[index] === 0 ? '' : String(values[index]);
+        const value = values[index];
+        cell.textContent = value === 0 ? '' : String(value);
+
+        if (value === 0) {
+            delete cell.dataset.value;
+        } else {
+            cell.dataset.value = String(value);
+        }
     });
 }
 
