@@ -84,7 +84,7 @@ function createAppLayout() {
 
     const savedMessage = document.createElement('p');
     savedMessage.className = 'leaderboard-entry__saved';
-    savedMessage.textContent = 'Ваш рекорд сохранен';
+    savedMessage.textContent = 'Your score is saved';
     savedMessage.hidden = true;
 
     const leaderboardTitle = document.createElement('h2');
@@ -353,7 +353,9 @@ function renderLeaderboard(entries) {
 function loadLeaderboard() {
     try {
         const saved = JSON.parse(localStorage.getItem('2048-leaderboard') || '[]');
-        return Array.isArray(saved) ? saved : [];
+        return Array.isArray(saved)
+            ? saved.sort((a, b) => b.score - a.score).slice(0, 10)
+            : [];
     } catch {
         return [];
     }
@@ -390,6 +392,7 @@ function saveGameState() {
 }
 
 let leaderboardEntries = loadLeaderboard();
+localStorage.setItem('2048-leaderboard', JSON.stringify(leaderboardEntries));
 createAppLayout();
 const savedGame = loadGameState();
 let boardValues = savedGame?.values ?? createInitialBoardValues();
