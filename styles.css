@@ -36,6 +36,7 @@
 
 .game-board {
     display: grid;
+    position: relative;
     touch-action: none;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(4, minmax(0, 1fr));
@@ -127,10 +128,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    position: fixed;
+    position: absolute;
     z-index: 10;
     border-radius: 5px;
     pointer-events: none;
+    will-change: transform;
 }
 
 .game-controls {
@@ -239,12 +241,14 @@
 .leaderboard-columns,
 .leaderboard-list__row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 60px 100px;
+    grid-template-columns: 28px minmax(0, 1fr) 66px 98px;
     gap: 8px;
 }
 
 .leaderboard-columns {
     font-weight: bold;
+    border-bottom: 2px solid #611626;
+    padding-bottom: 8px;
 }
 
 .leaderboard-list {
@@ -258,8 +262,19 @@
     border-bottom: 1px solid #611626;
 }
 
-.leaderboard-list__row span:first-child {
+.leaderboard-columns > :not(:first-child),
+.leaderboard-list__row > :not(:first-child) {
+    border-left: 1px solid #611626;
+    padding-left: 8px;
+}
+
+.leaderboard-list__row span:nth-child(2) {
     overflow-wrap: anywhere;
+}
+
+.leaderboard-columns > :nth-child(3),
+.leaderboard-list__row > :nth-child(3) {
+    text-align: right;
 }
 
 .game-over-dialog h2 {
@@ -337,9 +352,14 @@
 
     .leaderboard-columns,
     .leaderboard-list__row {
-        grid-template-columns: minmax(0, 1fr) 52px 88px;
+        grid-template-columns: 24px minmax(0, 1fr) 52px 88px;
         gap: 6px;
         font-size: 0.875rem;
+    }
+
+    .leaderboard-columns > :not(:first-child),
+    .leaderboard-list__row > :not(:first-child) {
+        padding-left: 4px;
     }
 
     .leaderboard-dialog__header {

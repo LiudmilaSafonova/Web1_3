@@ -112,7 +112,11 @@ function createAppLayout() {
 
     const leaderboardColumns = document.createElement('div');
     leaderboardColumns.className = 'leaderboard-columns';
-    leaderboardColumns.append('Name', 'Score', 'Date');
+    ['№', 'Name', 'Score', 'Date'].forEach((label) => {
+        const column = document.createElement('span');
+        column.textContent = label;
+        leaderboardColumns.append(column);
+    });
 
     const leaderboardList = document.createElement('ol');
     leaderboardList.className = 'leaderboard-list';
@@ -220,6 +224,7 @@ function animateBoardMove(result, spawnedPositions, speed = 1) {
         return Promise.resolve();
     }
 
+    const boardRectangle = board.getBoundingClientRect();
     const rectangles = cells.map((cell) => cell.getBoundingClientRect());
     const ghosts = result.movements.map(({ from, to }) => {
         const originalCell = cells[from];
@@ -233,11 +238,11 @@ function animateBoardMove(result, spawnedPositions, speed = 1) {
         ghost.style.color = originalStyle.color;
         ghost.style.fontSize = originalStyle.fontSize;
         ghost.style.fontWeight = originalStyle.fontWeight;
-        ghost.style.left = `${source.left}px`;
-        ghost.style.top = `${source.top}px`;
+        ghost.style.left = `${source.left - boardRectangle.left}px`;
+        ghost.style.top = `${source.top - boardRectangle.top}px`;
         ghost.style.width = `${source.width}px`;
         ghost.style.height = `${source.height}px`;
-        document.body.append(ghost);
+        board.append(ghost);
 
         return {
             element: ghost,
@@ -255,9 +260,6 @@ function animateBoardMove(result, spawnedPositions, speed = 1) {
     ], { duration: 160 * speed, easing: 'ease-in-out', fill: 'forwards' }));
 
     return Promise.all(movements.map((animation) => animation.finished)).then(() => {
-        ghosts.forEach(({ element }) => element.remove());
-        board.classList.remove('game-board--animating');
-
         const pulses = [];
         result.mergedPositions.forEach((index) => {
             pulses.push(cells[index].animate([
@@ -273,6 +275,8 @@ function animateBoardMove(result, spawnedPositions, speed = 1) {
             ], { duration: 130 * speed, easing: 'ease-out' }));
         });
 
+        ghosts.forEach(({ element }) => element.remove());
+        board.classList.remove('game-board--animating');
         return Promise.all(pulses.map((animation) => animation.finished));
     });
 }
@@ -333,9 +337,12 @@ function renderLeaderboard(entries) {
     const list = document.querySelector('.leaderboard-list');
     list.replaceChildren();
 
-    entries.forEach((entry) => {
+    entries.forEach((entry, index) => {
         const row = document.createElement('li');
         row.className = 'leaderboard-list__row';
+
+        const rank = document.createElement('span');
+        rank.textContent = String(index + 1);
 
         const name = document.createElement('span');
         name.textContent = entry.name;
@@ -347,7 +354,7 @@ function renderLeaderboard(entries) {
         date.dateTime = entry.date;
         date.textContent = entry.date.split('-').reverse().join('.');
 
-        row.append(name, score, date);
+        row.append(rank, name, score, date);
         list.append(row);
     });
 }
