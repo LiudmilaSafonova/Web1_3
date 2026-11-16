@@ -281,3 +281,67 @@
     font: inherit;
     cursor: pointer;
 }
+
+@media (max-width: 768px) {
+    body {
+        margin: 0;
+        padding: 24px;
+    }
+
+    .game-area {
+        width: min(100%, 420px);
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    .game-header {
+        gap: 8px;
+    }
+
+    .game-header h1 {
+        font-size: clamp(2rem, 10vw, 3rem);
+    }
+
+    .game-score {
+        min-width: 76px;
+        padding: 6px 10px;
+    }
+
+    .game-score output {
+        font-size: 1.25rem;
+    }
+
+    .game-board {
+        gap: 7px;
+        padding: 7px;
+    }
+
+    .game-board__cell {
+        font-size: clamp(14px, 5.5vw, 24px);
+    }
+
+    .leaderboard-entry,
+    .leaderboard-dialog,
+    .game-over-dialog {
+        padding: 16px;
+    }
+
+    .leaderboard-columns,
+    .leaderboard-list__row {
+        grid-template-columns: minmax(0, 1fr) 52px 88px;
+        gap: 6px;
+        font-size: 0.875rem;
+    }
+
+    .leaderboard-dialog__header {
+        flex-wrap: wrap;
+    }
+
+    .game-over-dialog__actions button {
+        flex: 1;
+    }
+}
