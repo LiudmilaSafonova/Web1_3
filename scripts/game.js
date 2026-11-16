@@ -1,5 +1,6 @@
 function mergeRowLeft(row) {
-    const tiles = row.filter((value) => value !== 0);
+    const tiles = row.map((value, index) => ({ value, sources: [index] }))
+        .filter((tile) => tile.value !== 0);
     let score = 0;
     let merged = true;
 
@@ -7,9 +8,10 @@ function mergeRowLeft(row) {
         merged = false;
 
         for (let i = 0; i < tiles.length - 1; i++) {
-            if (tiles[i] === tiles[i + 1]) {
-                tiles[i] *= 2;
-                score += tiles[i];
+            if (tiles[i].value === tiles[i + 1].value) {
+                tiles[i].value *= 2;
+                tiles[i].sources.push(...tiles[i + 1].sources);
+                score += tiles[i].value;
                 tiles.splice(i + 1, 1);
                 merged = true;
                 break;
@@ -17,11 +19,14 @@ function mergeRowLeft(row) {
         }
     }
 
-    while (tiles.length < row.length) {
-        tiles.push(0);
+    const sources = tiles.map((tile) => tile.sources);
+    const values = tiles.map((tile) => tile.value);
+
+    while (values.length < row.length) {
+        values.push(0);
     }
 
-    return { values: tiles, score };
+    return { values, score, sources };
 }
 
 function moveBoard(values, direction) {
@@ -36,6 +41,8 @@ function moveBoard(values, direction) {
     const horizontal = direction === 'left' || direction === 'right';
     const reverse = direction === 'right' || direction === 'down';
     let score = 0;
+    const movements = [];
+    const mergedPositions = [];
 
     for (let line = 0; line < size; line++) {
         const positions = [];
@@ -44,20 +51,31 @@ function moveBoard(values, direction) {
             positions.push(horizontal ? line * size + offset : offset * size + line);
         }
 
-        const currentLine = positions.map((position) => values[position]);
-        const lineToMerge = reverse ? currentLine.reverse() : currentLine;
-        const result = mergeRowLeft(lineToMerge);
-        const mergedLine = reverse ? result.values.reverse() : result.values;
+        const orientedPositions = reverse ? positions.reverse() : positions;
+        const currentLine = orientedPositions.map((position) => values[position]);
+        const result = mergeRowLeft(currentLine);
 
-        positions.forEach((position, index) => {
-            nextValues[position] = mergedLine[index];
+        orientedPositions.forEach((position, index) => {
+            nextValues[position] = result.values[index];
+        });
+
+        result.sources.forEach((sources, index) => {
+            const destination = orientedPositions[index];
+
+            if (sources.length > 1) {
+                mergedPositions.push(destination);
+            }
+
+            sources.forEach((source) => {
+                movements.push({ from: orientedPositions[source], to: destination });
+            });
         });
 
         score += result.score;
     }
 
     const changed = values.some((value, index) => value !== nextValues[index]);
-    return { values: nextValues, score, changed };
+    return { values: nextValues, score, changed, movements, mergedPositions };
 }
 
 function addRandomTiles(values, minCount = 1, maxCount = 2) {

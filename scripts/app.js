@@ -194,12 +194,82 @@ function renderBoard(values) {
     });
 }
 
+function animateBoardMove(result, spawnedPositions) {
+    const board = document.querySelector('.game-board');
+    const cells = Array.from(board.querySelectorAll('.game-board__cell'));
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        renderBoard(boardValues);
+        return Promise.resolve();
+    }
+
+    const rectangles = cells.map((cell) => cell.getBoundingClientRect());
+    const ghosts = result.movements.map(({ from, to }) => {
+        const originalCell = cells[from];
+        const originalStyle = window.getComputedStyle(originalCell);
+        const ghost = document.createElement('div');
+        const source = rectangles[from];
+        const target = rectangles[to];
+        ghost.className = 'moving-tile';
+        ghost.textContent = originalCell.textContent;
+        ghost.style.backgroundColor = originalStyle.backgroundColor;
+        ghost.style.color = originalStyle.color;
+        ghost.style.fontSize = originalStyle.fontSize;
+        ghost.style.fontWeight = originalStyle.fontWeight;
+        ghost.style.left = `${source.left}px`;
+        ghost.style.top = `${source.top}px`;
+        ghost.style.width = `${source.width}px`;
+        ghost.style.height = `${source.height}px`;
+        document.body.append(ghost);
+
+        return {
+            element: ghost,
+            deltaX: target.left - source.left,
+            deltaY: target.top - source.top,
+        };
+    });
+
+    board.classList.add('game-board--animating');
+    renderBoard(boardValues);
+
+    const movements = ghosts.map(({ element, deltaX, deltaY }) => element.animate([
+        { transform: 'translate(0, 0)' },
+        { transform: `translate(${deltaX}px, ${deltaY}px)` },
+    ], { duration: 160, easing: 'ease-in-out', fill: 'forwards' }));
+
+    return Promise.all(movements.map((animation) => animation.finished)).then(() => {
+        ghosts.forEach(({ element }) => element.remove());
+        board.classList.remove('game-board--animating');
+
+        const pulses = [];
+        result.mergedPositions.forEach((index) => {
+            pulses.push(cells[index].animate([
+                { transform: 'scale(1.15)' },
+                { transform: 'scale(1)' },
+            ], { duration: 130, easing: 'ease-out' }));
+        });
+
+        spawnedPositions.forEach((index) => {
+            pulses.push(cells[index].animate([
+                { transform: 'scale(0.65)', opacity: 0 },
+                { transform: 'scale(1)', opacity: 1 },
+            ], { duration: 130, easing: 'ease-out' }));
+        });
+
+        return Promise.all(pulses.map((animation) => animation.finished));
+    });
+}
+
 function renderScore(score) {
     document.getElementById('score').textContent = String(score);
     document.getElementById('leaderboard-score').textContent = String(score);
 }
 
 function startNewGame() {
+    if (isAnimating) {
+        return;
+    }
+
     boardValues = createInitialBoardValues();
     currentScore = 0;
     gameIsOver = false;
@@ -216,7 +286,7 @@ function startNewGame() {
 }
 
 function undoLastMove() {
-    if (gameIsOver || previousState === null) {
+    if (isAnimating || gameIsOver || previousState === null) {
         return;
     }
 
@@ -297,6 +367,7 @@ let boardValues = savedGame?.values ?? createInitialBoardValues();
 let currentScore = savedGame?.score ?? 0;
 let gameIsOver = savedGame?.gameIsOver ?? false;
 let previousState = savedGame?.previousState ?? null;
+let isAnimating = false;
 renderBoard(boardValues);
 renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
@@ -309,7 +380,7 @@ if (gameIsOver) {
 }
 
 function handleMove(direction) {
-    if (gameIsOver || document.querySelector('dialog[open]')) {
+    if (isAnimating || gameIsOver || document.querySelector('dialog[open]')) {
         return;
     }
 
@@ -322,18 +393,26 @@ function handleMove(direction) {
     previousState = { values: boardValues.slice(), score: currentScore };
     document.getElementById('back-button').disabled = false;
     boardValues = addRandomTiles(result.values);
+    const spawnedPositions = boardValues.flatMap((value, index) =>
+        result.values[index] === 0 && value !== 0 ? [index] : []);
     currentScore += result.score;
-    renderBoard(boardValues);
     renderScore(currentScore);
 
     if (isGameOver(boardValues)) {
         gameIsOver = true;
         document.getElementById('back-button').disabled = true;
         document.getElementById('final-score').textContent = String(currentScore);
-        document.querySelector('.game-over-dialog').showModal();
     }
 
     saveGameState();
+    isAnimating = true;
+    animateBoardMove(result, spawnedPositions).then(() => {
+        isAnimating = false;
+
+        if (gameIsOver) {
+            document.querySelector('.game-over-dialog').showModal();
+        }
+    });
 }
 
 document.addEventListener('keydown', (event) => {

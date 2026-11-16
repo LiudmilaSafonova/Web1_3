@@ -118,6 +118,21 @@
     background-color: #3b0c19;
 }
 
+.game-board--animating .game-board__cell[data-value] {
+    background-color: #CA8D9A;
+    color: transparent;
+}
+
+.moving-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 10;
+    border-radius: 5px;
+    pointer-events: none;
+}
+
 .game-controls {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
