@@ -210,11 +210,11 @@ function renderBoard(values) {
     });
 }
 
-function animateBoardMove(result, spawnedPositions) {
+function animateBoardMove(result, spawnedPositions, speed = 1) {
     const board = document.querySelector('.game-board');
     const cells = Array.from(board.querySelectorAll('.game-board__cell'));
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (speed <= 1 / 290 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         renderBoard(boardValues);
         return Promise.resolve();
     }
@@ -251,7 +251,7 @@ function animateBoardMove(result, spawnedPositions) {
     const movements = ghosts.map(({ element, deltaX, deltaY }) => element.animate([
         { transform: 'translate(0, 0)' },
         { transform: `translate(${deltaX}px, ${deltaY}px)` },
-    ], { duration: 160, easing: 'ease-in-out', fill: 'forwards' }));
+    ], { duration: 160 * speed, easing: 'ease-in-out', fill: 'forwards' }));
 
     return Promise.all(movements.map((animation) => animation.finished)).then(() => {
         ghosts.forEach(({ element }) => element.remove());
@@ -262,14 +262,14 @@ function animateBoardMove(result, spawnedPositions) {
             pulses.push(cells[index].animate([
                 { transform: 'scale(1.15)' },
                 { transform: 'scale(1)' },
-            ], { duration: 130, easing: 'ease-out' }));
+            ], { duration: 130 * speed, easing: 'ease-out' }));
         });
 
         spawnedPositions.forEach((index) => {
             pulses.push(cells[index].animate([
                 { transform: 'scale(0.65)', opacity: 0 },
                 { transform: 'scale(1)', opacity: 1 },
-            ], { duration: 130, easing: 'ease-out' }));
+            ], { duration: 130 * speed, easing: 'ease-out' }));
         });
 
         return Promise.all(pulses.map((animation) => animation.finished));
@@ -413,7 +413,7 @@ if (gameIsOver) {
     document.querySelector('.game-over-dialog').showModal();
 }
 
-function handleMove(direction) {
+function handleMove(direction, speed = 1) {
     if (isAnimating || gameIsOver || document.querySelector('dialog[open]')) {
         return;
     }
@@ -441,7 +441,7 @@ function handleMove(direction) {
 
     saveGameState();
     isAnimating = true;
-    animateBoardMove(result, spawnedPositions).then(() => {
+    animateBoardMove(result, spawnedPositions, speed).then(() => {
         isAnimating = false;
 
         if (gameIsOver) {
@@ -468,7 +468,7 @@ document.addEventListener('keydown', (event) => {
     }
 
     event.preventDefault();
-    handleMove(direction);
+    handleMove(direction, 0.4);
 });
 
 const board = document.querySelector('.game-board');
@@ -503,7 +503,7 @@ board.addEventListener('touchend', (event) => {
         ? (deltaX > 0 ? 'right' : 'left')
         : (deltaY > 0 ? 'down' : 'up');
 
-    handleMove(direction);
+    handleMove(direction, 0.4);
 });
 
 board.addEventListener('touchcancel', () => {
