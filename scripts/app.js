@@ -58,8 +58,11 @@ function createAppLayout() {
 
     const leaderboardEntry = document.createElement('section');
     leaderboardEntry.className = 'leaderboard-entry';
+    leaderboardEntry.id = 'leaderboard-entry';
+    leaderboardEntry.hidden = true;
 
     const leaderboardText = document.createElement('p');
+    leaderboardText.className = 'leaderboard-entry__prompt';
     leaderboardText.append('add score ');
 
     const leaderboardScore = document.createElement('output');
@@ -78,6 +81,11 @@ function createAppLayout() {
     saveScoreButton.className = 'leaderboard-save';
     saveScoreButton.type = 'button';
     saveScoreButton.textContent = 'Add score';
+
+    const savedMessage = document.createElement('p');
+    savedMessage.className = 'leaderboard-entry__saved';
+    savedMessage.textContent = 'Ваш рекорд сохранен';
+    savedMessage.hidden = true;
 
     const leaderboardTitle = document.createElement('h2');
     leaderboardTitle.textContent = 'Leaderboard';
@@ -109,12 +117,16 @@ function createAppLayout() {
     const leaderboardList = document.createElement('ol');
     leaderboardList.className = 'leaderboard-list';
 
-    leaderboardEntry.append(leaderboardText, nameInput, saveScoreButton);
+    leaderboardEntry.append(leaderboardText, nameInput, saveScoreButton, savedMessage);
 
     leaderboardDialog.append(leaderboardHeader, leaderboardColumns, leaderboardList);
     leaderboardButton.addEventListener('click', () => leaderboardDialog.showModal());
     closeButton.addEventListener('click', () => leaderboardDialog.close());
     saveScoreButton.addEventListener('click', () => {
+        if (!gameIsOver || resultSaved) {
+            return;
+        }
+
         const name = nameInput.value.trim();
 
         if (!name) {
@@ -125,6 +137,9 @@ function createAppLayout() {
 
         addScoreToLeaderboard(name, Number(scoreValue.textContent));
         nameInput.value = '';
+        resultSaved = true;
+        saveGameState();
+        updateLeaderboardEntry();
         leaderboardDialog.showModal();
     });
 
@@ -149,6 +164,7 @@ function createAppLayout() {
     finalScoreText.append(finalScore);
 
     const addResultButton = document.createElement('button');
+    addResultButton.id = 'game-over-add-result';
     addResultButton.type = 'button';
     addResultButton.textContent = 'Add result to leaderboard';
     addResultButton.addEventListener('click', () => {
@@ -265,6 +281,16 @@ function renderScore(score) {
     document.getElementById('leaderboard-score').textContent = String(score);
 }
 
+function updateLeaderboardEntry() {
+    const entry = document.getElementById('leaderboard-entry');
+    entry.hidden = !gameIsOver;
+    entry.querySelector('.leaderboard-entry__prompt').hidden = resultSaved;
+    entry.querySelector('input').hidden = resultSaved;
+    entry.querySelector('.leaderboard-save').hidden = resultSaved;
+    entry.querySelector('.leaderboard-entry__saved').hidden = !resultSaved;
+    document.getElementById('game-over-add-result').disabled = resultSaved;
+}
+
 function startNewGame() {
     if (isAnimating) {
         return;
@@ -273,11 +299,13 @@ function startNewGame() {
     boardValues = createInitialBoardValues();
     currentScore = 0;
     gameIsOver = false;
+    resultSaved = false;
     previousState = null;
     saveGameState();
     document.getElementById('back-button').disabled = true;
     renderBoard(boardValues);
     renderScore(currentScore);
+    updateLeaderboardEntry();
 
     const gameOverDialog = document.querySelector('.game-over-dialog');
     if (gameOverDialog.open) {
@@ -356,6 +384,7 @@ function saveGameState() {
         values: boardValues,
         score: currentScore,
         gameIsOver,
+        resultSaved,
         previousState,
     }));
 }
@@ -366,11 +395,13 @@ const savedGame = loadGameState();
 let boardValues = savedGame?.values ?? createInitialBoardValues();
 let currentScore = savedGame?.score ?? 0;
 let gameIsOver = savedGame?.gameIsOver ?? false;
+let resultSaved = savedGame?.resultSaved ?? false;
 let previousState = savedGame?.previousState ?? null;
 let isAnimating = false;
 renderBoard(boardValues);
 renderScore(currentScore);
 renderLeaderboard(leaderboardEntries);
+updateLeaderboardEntry();
 document.getElementById('back-button').disabled = gameIsOver || previousState === null;
 saveGameState();
 
@@ -400,6 +431,7 @@ function handleMove(direction) {
 
     if (isGameOver(boardValues)) {
         gameIsOver = true;
+        updateLeaderboardEntry();
         document.getElementById('back-button').disabled = true;
         document.getElementById('final-score').textContent = String(currentScore);
     }
