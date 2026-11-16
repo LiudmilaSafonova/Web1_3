@@ -123,7 +123,7 @@ function createAppLayout() {
     leaderboardButton.addEventListener('click', () => leaderboardDialog.showModal());
     closeButton.addEventListener('click', () => leaderboardDialog.close());
     saveScoreButton.addEventListener('click', () => {
-        if (!gameIsOver || resultSaved) {
+        if (!gameIsOver || !nameEntryVisible || resultSaved) {
             return;
         }
 
@@ -140,10 +140,9 @@ function createAppLayout() {
         resultSaved = true;
         saveGameState();
         updateLeaderboardEntry();
-        leaderboardDialog.showModal();
     });
 
-    boardColumn.append(leaderboardEntry, leaderboardButton);
+    boardColumn.append(leaderboardButton);
 
     gameArea.append(boardColumn);
     main.append(gameArea);
@@ -168,7 +167,9 @@ function createAppLayout() {
     addResultButton.type = 'button';
     addResultButton.textContent = 'Add result to leaderboard';
     addResultButton.addEventListener('click', () => {
-        gameOverDialog.close();
+        nameEntryVisible = true;
+        saveGameState();
+        updateLeaderboardEntry();
         nameInput.focus();
     });
 
@@ -186,7 +187,7 @@ function createAppLayout() {
     gameOverActions.className = 'game-over-dialog__actions';
     gameOverActions.append(addResultButton, gameOverClose, gameOverRestart);
 
-    gameOverDialog.append(gameOverTitle, finalScoreText, gameOverActions);
+    gameOverDialog.append(gameOverTitle, finalScoreText, gameOverActions, leaderboardEntry);
     document.body.append(main, leaderboardDialog, gameOverDialog);
 
 }
@@ -283,12 +284,12 @@ function renderScore(score) {
 
 function updateLeaderboardEntry() {
     const entry = document.getElementById('leaderboard-entry');
-    entry.hidden = !gameIsOver;
+    entry.hidden = !gameIsOver || (!nameEntryVisible && !resultSaved);
     entry.querySelector('.leaderboard-entry__prompt').hidden = resultSaved;
     entry.querySelector('input').hidden = resultSaved;
     entry.querySelector('.leaderboard-save').hidden = resultSaved;
     entry.querySelector('.leaderboard-entry__saved').hidden = !resultSaved;
-    document.getElementById('game-over-add-result').disabled = resultSaved;
+    document.getElementById('game-over-add-result').hidden = nameEntryVisible || resultSaved;
 }
 
 function startNewGame() {
@@ -300,6 +301,7 @@ function startNewGame() {
     currentScore = 0;
     gameIsOver = false;
     resultSaved = false;
+    nameEntryVisible = false;
     previousState = null;
     saveGameState();
     document.getElementById('back-button').disabled = true;
@@ -387,6 +389,7 @@ function saveGameState() {
         score: currentScore,
         gameIsOver,
         resultSaved,
+        nameEntryVisible,
         previousState,
     }));
 }
@@ -399,6 +402,7 @@ let boardValues = savedGame?.values ?? createInitialBoardValues();
 let currentScore = savedGame?.score ?? 0;
 let gameIsOver = savedGame?.gameIsOver ?? false;
 let resultSaved = savedGame?.resultSaved ?? false;
+let nameEntryVisible = savedGame?.nameEntryVisible ?? resultSaved;
 let previousState = savedGame?.previousState ?? null;
 let isAnimating = false;
 renderBoard(boardValues);

@@ -164,6 +164,11 @@
     background-color: #CA8D9A;
 }
 
+.game-over-dialog .leaderboard-entry {
+    padding: 0;
+    background-color: transparent;
+}
+
 .leaderboard-entry p {
     margin: 0 0 16px;
 }
